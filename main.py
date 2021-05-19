@@ -9,8 +9,11 @@ from time import sleep
 import json
 import smtplib, ssl
 
+from mail import get_message, send_mail, get_adm_message
+
 root = Path(__file__).parent
-author = 'Dit navn her'
+with open(root.joinpath('config.json'), 'r+') as f:
+    config = json.load(f)
 
 
 class RestVacBot:
@@ -66,70 +69,24 @@ class RestVacBot:
         self.driver.quit()
 
 
-def send_mail(recepient, content, errors):
-    smtp_server = "smtp.gmail.com"
-    port = 587  # For starttls
-    sender_email = "email here"
-    password = 'password here'
-
-    # Create a secure SSL context
-    context = ssl.create_default_context()
-    with smtplib.SMTP(smtp_server, port) as server:
-        server.ehlo()  # Can be omitted
-        server.starttls(context=context)  # Secure the connection
-        server.ehlo()  # Can be omitted
-        server.login(sender_email, password)
-        text_type = 'plain'
-
-        if not errors:
-            txt = f"""
-Hej,
-Jeg har successfuldt oprettet en anmodning om restvaccine i dit navn :)
-med følgende oplysninger:
-allerede vaccineret: nej
-navn: {content['name']}
-alder: {content['age']}
-telefon: {content['phone']}
-vaccinerings sted: 
- - Aalborg.
+def send_mail_to_config(recepient, content, errors):
+    text_type = 'plain'
+    txt = get_message(config['author']['name'], content, errors)
+    msg = MIMEText(txt, text_type, 'utf-8')
+    msg['Subject'] = f'{"!!!FEJL!!!!" if errors else "SUCCESS"}: anmodning om restvaccine'
+    msg['From'] = config['email']['username']
+    msg['To'] = recepient
+    send_mail(config['email']['username'], config['email']['password'], msg)
 
 
-Hvis du har brug for at ændre nogle af disse oplysninger, så kontakt {author}!
-
-Vh
-Bot
-            """
-            msg = MIMEText(txt, 'plain', 'utf-8')
-            msg['Subject'] = 'Success: anmodning om restvaccine'
-        else:
-            txt = f"""
-Hej,
-Der er sket en upsiwupsi ift. oprettelse af anmodning om restvaccine i dit navn :(
-Du kan evt. selv gøre det på denne side: https://rn.dk/sundhed/patient-i-region-nordjylland/coronavirus/covid-vaccination/restvacciner
-
-Hvis du vil være super sød, så smider du lige en besked til {author} på discord, så han kan se på det :)
-
-Dine oplysninger:
-allerede vaccineret: nej
-navn: {content['name']}
-alder: {content['age']}
-telefon: {content['phone']}
-vaccinerings sted: 
-Aalborg.
-
-fejlbesked:
-{errors}
-
-Hvis du har brug for at ændre nogle af disse oplysninger, så kontakt {author}!
-
-Vh
-Bot 
-            """
-            msg = MIMEText(txt, 'plain', 'utf-8')
-            msg['Subject'] = '!!Fejl!!: anmodning om restvaccine'
-        msg['From'] = sender_email
-        msg['To'] = recepient
-        server.send_message(msg)
+def send_admin_mail(all_errors: dict):
+    text_type = 'plain'
+    txt = get_adm_message(config['author']['name'], all_errors)
+    msg = MIMEText(txt, text_type, 'utf-8')
+    msg['Subject'] = f'Admin message'
+    msg['From'] = config['email']['username']
+    msg['To'] = config['author']['email']
+    send_mail(config['email']['username'], config['email']['password'], msg)
 
 
 def full_stack():
@@ -148,6 +105,8 @@ def full_stack():
 
 
 def main():
+    all_errors = dict()
+
     for file in root.glob('subs/*'):
         if file.name.endswith('.json'):
             with open(file, 'r+') as f:
@@ -172,7 +131,10 @@ def main():
                             sleep(3)
                         except Exception as e:
                             errors.append(full_stack())
-                send_mail(obj['email'], obj, errors)
+
+                all_errors[f.name] = errors
+                send_mail_to_config(obj['email'], obj, errors)
+    send_admin_mail(all_errors)
 
 
 if __name__ == '__main__':

@@ -1,0 +1,10 @@
+{
+  "email": {
+    "username": "your username",
+    "password": "your psasword"
+  },
+  "author": {
+    "name": "author name",
+    "email": "author mail"
+  }
+}
