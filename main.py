@@ -26,7 +26,7 @@ class RestVacBot:
         self.age_text = age
         self.phone_text = phone
         options = Options()
-        # options.headless = True
+        options.headless = True
         self.driver = webdriver.Firefox(
             executable_path=GeckoDriverManager().install(),
             options=options)
