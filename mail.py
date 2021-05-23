@@ -8,8 +8,18 @@ def get_message(authorname, content, errors):
 
     return f"""
 Hej,
-Jeg har {"succesfuld" if not errors else "fejlet i at"} oprettet en anmodning om restvaccine i dit navn {":)" if not errors else ":("}
-med følgende oplysninger:
+
+Mit navn er Bot. Jeg er en automatisk vaccine indmelding apperatus, ekstraordinær!
+
+I min fantalastiske virken, har jeg formået at indsætte dine yderst komplicerede oplysninger ind en utaknemmelig form, ved hjælp af 
+en meget hemmelig algorithme som kun min skrivers store hjerne kan læse! (kan ses her: https://i.kym-cdn.com/entries/icons/facebook/000/030/525/cover5.jpg)
+
+og algorithmen kan ses her: https://github.com/asger-weirsoee/rest-vaccine-tilmelder.
+
+I min iver har jeg {"succesfuld" if not errors else "fejlet i at"} oprettet en anmodning om restvaccine i dit navn {":)" if not errors else ":("}
+
+de oplysninger jeg har kunne fremsniffe fra... ja.. altså.. fra de oplysninger du har givet mig, har jeg indsat følgende oplysninger:
+
 allerede vaccineret: nej
 navn: {content['name']}
 alder: {content['age']}
@@ -20,11 +30,15 @@ vaccinerings sted:
 {"Fejlene der er kommet er: " if errors else ""}
 {linesep.join(errors)}
 
-Hvis du har brug for at ændre nogle af disse oplysninger, så kontakt {authorname}!
+Hvis der er nogen oplysninger der er forkert her... SÅ må du meget gerne lige give et kald eller 2 til min kode slave: {authorname}!
+eller hvis du er frisk, oprette er træk ønske på FåKnudepunktet 
+
 
 Vh
-Bot    
-    
+Bot
+
+Ps. min kodeslave er single!
+
     """
 
 
