@@ -7,7 +7,6 @@ from selenium import webdriver
 from webdriver_manager.firefox import GeckoDriverManager
 from time import sleep
 import json
-import smtplib, ssl
 
 from mail import get_message, send_mail, get_adm_message
 
@@ -45,6 +44,9 @@ class RestVacBot:
             '/html/body/form/div[4]/div[1]/div/div/div/div/div[3]/div[2]/div/div[1]/div/div[1]/div[4]/div/div/div/ul/li[3]/div/div/div/div/div/div/div/div/div/p[4]/a')
         navigate_to_page.click()
 
+    def __save_screenshot(self):
+        pass
+
     def fill_out_form(self):
         already_vaccinated = self.driver.find_element_by_xpath(
             '/html/body/div/form/div[1]/div[2]/table/tbody/tr[2]/td/div/span[2]/label')
@@ -55,10 +57,13 @@ class RestVacBot:
         age.send_keys(self.age_text)
         phone_number = self.driver.find_element_by_xpath('//*[@id="t337561922"]')
         phone_number.send_keys(self.phone_text)
+        sleep(1)
+        self.__save_screenshot()
+        sleep(1)
         vaccination_place = self.driver.find_element_by_xpath(
             '/html/body/div/form/div[1]/div[6]/table/tbody/tr[2]/td/div/span[2]/label')
         vaccination_place.click()
-        sleep(1)
+        sleep(2)
         next_button = self.driver.find_element_by_xpath('/html/body/div/form/div[2]/div[3]/input')
         next_button.click()
         sleep(5)
@@ -125,7 +130,7 @@ def main():
 
                             runner = RestVacBot(obj['name'], obj['age'], obj['phone'])
                             runner.go_to_page()
-                            sleep(5)
+                            sleep(10)
                             runner.fill_out_form()
                             runner.close()
                             sleep(3)
