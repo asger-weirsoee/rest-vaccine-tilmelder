@@ -5,7 +5,6 @@ from os import linesep
 
 
 def get_message(authorname, content, errors):
-
     return f"""
 Hej,
 
@@ -25,7 +24,8 @@ navn: {content['name']}
 alder: {content['age']}
 telefon: {content['phone']}
 vaccinerings sted: 
- - Aalborg.
+ - {content['big_place']}.
+    - {content['place_name']}
 
 {"Fejlene der er kommet er: " if errors else ""}
 {linesep.join(errors)}

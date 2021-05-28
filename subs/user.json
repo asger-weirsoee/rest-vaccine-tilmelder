@@ -1,6 +1,8 @@
 {
-  "name": "Dit navn her",
-  "age": "Din alder her",
-  "phone": "Dit telefon nummer her",
-  "email": "din email her"
+  "name": "Testbruger",
+  "age": "21",
+  "phone": "12345678",
+  "email": "asger@weirsoe.dk",
+  "num_on_list": 1,
+  "big_place": "aalborg"
 }
