@@ -3,11 +3,26 @@ For each config in subs makes a subscription for leftover vaccinations.
 
 ## subs 
 ```json
+The formatted JSON file that should be output,
+looks like this:
+Aalborg:
 {
-  "name": "The name of the person to subscribe for",
-  "age": "The age of the person",
-  "phone": "The phone number of the person",
-  "email": "The email of the person"
+    "name": "tekst dit fulde navn",
+    "phone": "tekst dit telefonnr",
+    "email": "tekst din email addresse",
+    "num_on_list": "0 indekseret af listen over vaccinatiaons steder",
+    "big_place": "aalborg",
+    "age": "text din alder i tal"
+}
+Aarhus:
+{
+    "name": "tekst dit fulde navn",
+    "phone": "tekst dit telefonnr",
+    "email": "tekst din email addresse",
+    "num_on_list": "0 indekseret af listen over vaccinatiaons steder",
+    "big_place": "aarhus",
+    "age": "text din alder i tal",
+    "date_of_birth": "text dd/mm/yyyy din f\u00f8dselsdato"
 }
 ```
 

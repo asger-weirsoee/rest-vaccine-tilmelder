@@ -11,7 +11,8 @@ class DriverClass(ABC):
         'name': 'tekst dit fulde navn',
         'phone': 'tekst dit telefonnr',
         'email': 'tekst din email addresse',
-        'num_on_list': '0 indekseret af listen over vaccinatiaons steder'
+        'num_on_list': '0 indekseret af listen over vaccinatiaons steder',
+        'big_place': 'string needs to be one of the supported regions.',
     }
 
     def __init__(self, driver):
