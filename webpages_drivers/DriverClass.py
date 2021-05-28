@@ -15,8 +15,9 @@ class DriverClass(ABC):
         'big_place': 'string needs to be one of the supported regions.',
     }
 
-    def __init__(self, driver):
+    def __init__(self, driver, args):
         self.driver: WebDriver = driver
+        self.args = args
 
     def run(self, **kwargs):
         self._go_to_page()
@@ -25,7 +26,7 @@ class DriverClass(ABC):
 
     def _screenshot(self, path, name: str):
         screen_shot_location = Path(path).joinpath(
-            name.strip()
+            name.replace(' ', '')
             .replace('æ', 'ae')
             .replace('Æ', 'Ae')
             .replace('ø', 'oe')
@@ -47,3 +48,6 @@ class DriverClass(ABC):
             if v not in kwargs.keys():
                 errors.append(f'{v} is required')
         return errors
+    @staticmethod
+    def get_info(**kwargs):
+        raise NotImplementedError("Must override method")

@@ -19,13 +19,7 @@ I min iver har jeg {"succesfuld" if not errors else "fejlet i at"} oprettet en a
 
 de oplysninger jeg har kunne fremsniffe fra... ja.. altså.. fra de oplysninger du har givet mig, har jeg indsat følgende oplysninger:
 
-allerede vaccineret: nej
-navn: {content['name']}
-alder: {content['age']}
-telefon: {content['phone']}
-vaccinerings sted: 
- - {content['big_place']}.
-    - {content['place_name']}
+{content}
 
 {"Fejlene der er kommet er: " if errors else ""}
 {linesep.join(errors)}

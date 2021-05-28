@@ -1,5 +1,6 @@
 import argparse
 import json
+import logging
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -57,11 +58,13 @@ class RestVacBot:
         options = Options()
         options.headless = True
         self.driver = webdriver.Firefox(
-            executable_path=GeckoDriverManager().install(),
+            executable_path=GeckoDriverManager(
+                log_level=logging.WARNING,
+                print_first_line=False).install(),
             options=options)
 
-    def run(self, klass: Callable[[webdriver.Firefox], DriverClass]):
-        b = klass(self.driver)
+    def run(self, klass: Callable[[webdriver.Firefox, any], DriverClass], args):
+        b = klass(self.driver, args)
         errors = b.validate(**self.kwargs)
 
         if errors:
@@ -73,10 +76,9 @@ class RestVacBot:
         self.driver.quit()
 
 
-def send_mail_to_config(recepient, content, errors):
+def send_mail_to_config(recepient, content, errors, args):
     message = MIMEMultipart()
     text_type = 'plain'
-    content['place_name'] = hard_coded_location_names[content['big_place']][content['num_on_list']]
     txt = get_message(config['author']['name'], content, errors)
     msg = MIMEText(txt, text_type, 'utf-8')
     msg['Subject'] = f'{"!!!FEJL!!!!" if errors else "SUCCESS"}: anmodning om restvaccine'
@@ -84,9 +86,11 @@ def send_mail_to_config(recepient, content, errors):
     msg['To'] = recepient
     message.attach(msg)
 
-    message.attach(MIMEImage(root.joinpath('images').joinpath(content['name'] + '.png').read_bytes()))
-
-    send_mail(config['email']['username'], config['email']['password'], msg)
+    if args.dummy_run:
+        root.joinpath('dummydata').mkdir(exist_ok=True)
+        root.joinpath('dummydata').joinpath(f'{recepient}.txt').write_text(txt)
+    else:
+        send_mail(config['email']['username'], config['email']['password'], msg)
 
 
 def send_admin_mail(all_errors: dict):
@@ -114,23 +118,25 @@ def full_stack():
     return stackstr
 
 
-def do_the_config(config_path: Path):
+def do_the_config(config_path: Path, args):
     all_errors = []
     with open(config_path, 'r+') as f:
         obj = json.load(f)
         obj['image_location'] = root.joinpath('images')
         with Display() as display:
             runner = RestVacBot(**obj)
+            method = locatiaon.get(obj['big_place'])
             try:
-                all_errors = runner.run(locatiaon.get(obj['big_place']))
+                all_errors = runner.run(method, args)
                 sleep(3)
             except Exception as e:
                 all_errors.append(full_stack())
                 runner.close()
             finally:
                 runner.close()
+        obj['place_name'] = hard_coded_location_names[obj['big_place']][obj['num_on_list']]
 
-        send_mail_to_config(obj['email'], obj, all_errors)
+        send_mail_to_config(obj['email'], method(None, args).get_info(**obj), all_errors, args)
     return all_errors
 
 
@@ -140,26 +146,30 @@ def main(args):
         print("The formatted JSON file that should be output,\n"
               "looks like this:")
         for x in locatiaon.values():
-            json_formatted = json.dumps(x(None).required, indent=4)
+            json_formatted = json.dumps(x(None, args).required, indent=4)
             print(x.__name__ + ":")
             print(json_formatted)
         exit()
 
     if args.all:
         for file in args.config_folder.glob('subs/*'):
+            if args.list_configs:
+                print(file.name)
             if file.name.endswith('.json') and (args.ignore is None or file not in [Path(x) for x in args.ignore]):
-                all_errors[file.name] = do_the_config(file)
+                all_errors[file.name] = do_the_config(file, args)
 
     else:
         for file in args.config:
+            if args.list_configs:
+                print(file.name)
             if not file.name.endswith('.json'):
                 all_errors[file.name] = ['Wrong file type']
-            all_errors[file.name] = do_the_config(file)
+            else:
+                all_errors[file.name] = do_the_config(file, args)
     send_admin_mail(all_errors)
 
 
 if __name__ == '__main__':
-    root = Path('__file__').parent
 
     args = argparse.ArgumentParser('Rest-Vac bot, automatically submits applications for leftover vacinations')
 
@@ -167,6 +177,14 @@ if __name__ == '__main__':
 
     args.add_argument('--ignore', nargs='+',
                       help="if --all is set, this ignores the configurations with the path here")
+
+    debug_options = args.add_argument_group(title="debug options")
+    debug_options.add_argument('--list-configs', action='store_true',
+                               help="Prints all configurations as they are loaded")
+    debug_options.add_argument('--dummy-run', action='store_true',
+                               help="Creates a run, that pretends to do everything, but does not send mail or sign up"
+                                    "to leftover vaccinations")
+
     mutually_exclusive = args.add_mutually_exclusive_group(required=True)
     mutually_exclusive.add_argument('--get-json-formats', action='store_true',
                                     help='Displays the JSON format that is required for each of the configurations')

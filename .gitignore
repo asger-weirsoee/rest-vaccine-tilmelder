@@ -7,6 +7,7 @@ __pycache__/
 # C extensions
 *.so
 images/*.png
+dummydata/*
 
 # Distribution / packaging
 .Python

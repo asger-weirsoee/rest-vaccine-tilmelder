@@ -4,8 +4,8 @@ from webpages_drivers.DriverClass import DriverClass
 
 
 class Aarhus(DriverClass):
-    def __init__(self, driver):
-        super().__init__(driver)
+    def __init__(self, driver, args):
+        super().__init__(driver, args)
         self.required['date_of_birth'] = 'text dd/mm/yyyy din fødselsdato'
 
     def _go_to_page(self):
@@ -28,6 +28,21 @@ class Aarhus(DriverClass):
         vac_field.click()
 
         sleep(1)
-        submit_button = self.driver.find_element_by_xpath('//*[@id="58efbdd7-1555-4202-aec4-30c5745c4797"]')
-        submit_button.click()
+        if not self.args.dummy_run:
+            submit_button = self.driver.find_element_by_xpath('//*[@id="58efbdd7-1555-4202-aec4-30c5745c4797"]')
+            submit_button.click()
         self._screenshot(kwargs['image_location'], kwargs['name'])
+
+    @staticmethod
+    def get_info(**kwargs):
+        return f"""
+allerede vaccineret: nej
+navn: {kwargs['name']}
+alder: {kwargs['date_of_birth']}
+telefon: {kwargs['phone']}
+vaccinerings sted: 
+ - {kwargs['big_place']}.
+    - {kwargs['big_place']}
+        
+        
+"""

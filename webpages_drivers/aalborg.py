@@ -4,8 +4,8 @@ from webpages_drivers.DriverClass import DriverClass
 
 
 class Aalborg(DriverClass):
-    def __init__(self, driver):
-        super().__init__(driver)
+    def __init__(self, driver, args):
+        super().__init__(driver, args)
         self.required['age'] = 'text din alder i tal'
 
     def _go_to_page(self):
@@ -38,9 +38,24 @@ class Aalborg(DriverClass):
             f'/html/body/div/form/div[1]/div[6]/table/tbody/tr[2]/td/div/span[{kwargs["num_on_list"] + 1}]/label')
         vaccination_place.click()
         sleep(2)
-        #next_button = self.driver.find_element_by_xpath('/html/body/div/form/div[2]/div[3]/input')
-        #next_button.click()
-        self._screenshot(kwargs['image_location'], kwargs['name'])
-        sleep(5)
-        #close_button = self.driver.find_element_by_xpath('/html/body/div/form/div[2]/div[3]/input')
-        #close_button.click()
+        if not self.args.dummy_run:
+            next_button = self.driver.find_element_by_xpath('/html/body/div/form/div[2]/div[3]/input')
+            next_button.click()
+            self._screenshot(kwargs['image_location'], kwargs['name'])
+            sleep(5)
+            close_button = self.driver.find_element_by_xpath('/html/body/div/form/div[2]/div[3]/input')
+            close_button.click()
+
+    @staticmethod
+    def get_info(**kwargs):
+        return f"""
+allerede vaccineret: nej
+navn: {kwargs['name']}
+alder: {kwargs['age']}
+telefon: {kwargs['phone']}
+vaccinerings sted: 
+ - {kwargs['big_place']}.
+    - {kwargs['place_name']}
+
+
+"""
