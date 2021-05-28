@@ -7,17 +7,18 @@ from selenium.webdriver.firefox.webdriver import WebDriver
 
 class DriverClass(ABC):
     location = ''
-    required = {
-        'name': 'tekst dit fulde navn',
-        'phone': 'tekst dit telefonnr',
-        'email': 'tekst din email addresse',
-        'num_on_list': '0 indekseret af listen over vaccinatiaons steder',
-        'big_place': 'string needs to be one of the supported regions.',
-    }
+    required = None
 
     def __init__(self, driver, args):
         self.driver: WebDriver = driver
         self.args = args
+        self.required = {
+            'name': 'tekst dit fulde navn',
+            'phone': 'tekst dit telefonnr',
+            'email': 'tekst din email addresse',
+            'num_on_list': '0 indekseret af listen over vaccinatiaons steder',
+            'big_place': 'string needs to be one of the supported regions.',
+        }
 
     def run(self, **kwargs):
         self._go_to_page()

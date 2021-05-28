@@ -42,7 +42,7 @@ alder: {kwargs['date_of_birth']}
 telefon: {kwargs['phone']}
 vaccinerings sted: 
  - {kwargs['big_place']}.
-    - {kwargs['big_place']}
+    - {kwargs['place_name']}
         
         
 """

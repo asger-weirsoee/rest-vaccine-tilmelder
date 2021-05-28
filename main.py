@@ -1,7 +1,5 @@
 import argparse
 import json
-import logging
-from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from pathlib import Path
@@ -59,7 +57,7 @@ class RestVacBot:
         options.headless = True
         self.driver = webdriver.Firefox(
             executable_path=GeckoDriverManager(
-                log_level=logging.WARNING,
+                log_level=50,
                 print_first_line=False).install(),
             options=options)
 
@@ -170,7 +168,6 @@ def main(args):
 
 
 if __name__ == '__main__':
-
     args = argparse.ArgumentParser('Rest-Vac bot, automatically submits applications for leftover vacinations')
 
     args.add_argument('--config-folder', default=root, help='The folder that the configurations are stored ')
